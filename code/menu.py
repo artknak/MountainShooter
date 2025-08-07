@@ -11,7 +11,7 @@ class Menu:
     def __init__(self, window):
         self.window = window
 
-        # Para adicionar o background do menu, precisamos carregá-la e adicioná-la a um retângulo Esse retângulo
+        # Para adicionar o background do menu, precisamos carregá-la e adicioná-la a um retângulo. Esse retângulo
         # representará a imagem de fundo.
         self.surf = pygame.image.load('./asset/MenuBg.png')  # Carregando imagem
         self.rect = self.surf.get_rect(left=0, top=0)  # Retângulo é desenhado a partir do topo superior esquerdo
@@ -23,7 +23,7 @@ class Menu:
         while True:  # Loop para ficar infinitamente carregando o background
             self.window.blit(source=self.surf, dest=self.rect)  # Aplicando a imagem ao retângulo do background
             self.menu_text(75, 'Mountain', COLOR_ORANGE, ((WIN_WIDTH / 2), 70))
-            self.menu_text(75, 'Shooter', COLOR_ORANGE, ((WIN_WIDTH / 2), 115))
+            self.menu_text(75, 'Shooter', COLOR_WHITE, ((WIN_WIDTH / 2), 115))
 
             # Laço para imprimir opções do menu
             for opt in range(len(MENU_OPTION)):

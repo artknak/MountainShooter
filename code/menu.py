@@ -1,10 +1,11 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import pygame.image
-from pygame import Surface, Rect
+from pygame.surface import Surface
+from pygame.rect import Rect
 from pygame.font import Font
 
-from code.const import WIN_WIDTH, COLOR_ORANGE, MENU_OPTION, COLOR_WHITE
+from code.const import WIN_WIDTH, COLOR_ORANGE, MENU_OPTION, COLOR_WHITE, COLOR_YELLOW
 
 
 class Menu:
@@ -16,27 +17,51 @@ class Menu:
         self.surf = pygame.image.load('./asset/MenuBg.png')  # Carregando imagem
         self.rect = self.surf.get_rect(left=0, top=0)  # Retângulo é desenhado a partir do topo superior esquerdo
 
-    def run(self, ):
+    def run(self):
+        menu_option = 0  # Possibilita opções no menu (Ex: "NEW GAME - 1P" é representado por menu_option = 0)
         pygame.mixer_music.load('./asset/Menu.mp3')  # Carregando música do menu
         pygame.mixer_music.play(-1)  # Toca a música infinitamente
 
         while True:  # Loop para ficar infinitamente carregando o background
             self.window.blit(source=self.surf, dest=self.rect)  # Aplicando a imagem ao retângulo do background
             self.menu_text(75, 'Mountain', COLOR_ORANGE, ((WIN_WIDTH / 2), 70))
-            self.menu_text(75, 'Shooter', COLOR_WHITE, ((WIN_WIDTH / 2), 115))
+            self.menu_text(75, 'Shooter', COLOR_ORANGE, ((WIN_WIDTH / 2), 115))
 
             # Laço para imprimir opções do menu
+            # A cada repetição, as opções são impressas com um offset de 30 px
             for opt in range(len(MENU_OPTION)):
-                # A cada laço, o texto é impresso com um offset de 30 px
-                self.menu_text(25, MENU_OPTION[opt], COLOR_WHITE, ((WIN_WIDTH / 2), 170 + 25 * opt))
-
+                if opt == menu_option:
+                    # If para pintar o texto selecionado de amarelo
+                    self.menu_text(25, MENU_OPTION[opt], COLOR_YELLOW, ((WIN_WIDTH / 2),
+                                                                        170 + 25 * opt))
+                else:
+                    self.menu_text(25, MENU_OPTION[opt], COLOR_WHITE, ((WIN_WIDTH / 2),
+                                                                       170 + 25 * opt))
             pygame.display.flip()  # Atualizando tela
 
-            # Criando evento para fechar janela!
+            # Registrando eventos
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()  # Close window
-                    quit()  # End pygame
+                if event.type == pygame.QUIT:                   # Evento para encerrar janela
+                    pygame.quit()                               # Close window
+                    quit()                                      # End pygame
+
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_DOWN:              # Possibilita descer no menu
+                        if menu_option < len(MENU_OPTION) - 1:  # Usuário é permitido descer somente até o exit
+                            menu_option += 1                    # Sem isso, poderia descer até sair da tela
+                        else:
+                            menu_option = 0                     # Volta ao início se menu_option for > len(MENU_OPTION)
+
+                    if event.key == pygame.K_UP:                # Possibilita subir no menu
+                        if menu_option > 0:
+                            menu_option -= 1
+                        else:
+                            menu_option = len(MENU_OPTION) -1
+
+                    if event.key == pygame.K_RETURN:            # Registra enter no menu
+                        return MENU_OPTION[menu_option]         # Pega opção no menu através do seu índice
+
+
 
 
     def menu_text(self, text_size: int, text: str, text_color: tuple, text_center_pos: tuple):

@@ -11,6 +11,7 @@ from pygame.surface import Surface
 from code.const import COLOR_WHITE, WIN_HEIGHT, MENU_OPTION, EVENT_ENEMY, SPAWN_TIME
 from code.entity import Entity
 from code.entityFactory import EntityFactory
+from code.entityMediator import EntityMediator
 
 
 class Level:
@@ -63,6 +64,12 @@ class Level:
             self.level_text(14, f'Entidades: {len(self.entity_list)}',
                             COLOR_WHITE, (10, WIN_HEIGHT - 20))  # Entity text (mostra quantos têm na fase)
             pygame.display.flip()
+
+            EntityMediator.verify_collision(self.entity_list)  # Verificador de colisões
+
+            # Verifica a vida da entidade
+            # Se for 0, apaga a entidade de entity_list, ou seja, a apaga do jogo
+            EntityMediator.verify_health(self.entity_list)
 
     def level_text(self, text_size: int, text: str, text_color: tuple, text_pos: tuple):
         text_font: Font = pygame.font.SysFont(name='Lucida Sans Typewriter', size=text_size)

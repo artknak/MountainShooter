@@ -3,6 +3,8 @@
 from abc import ABC, abstractmethod
 import pygame.image
 
+from code.const import ENTITY_HEALTH
+
 
 # Background, player e enemy serão gerados a partir da classe abstrata Entity.
 # Cada entidade recebe um nome, uma posição e uma velocidade (útil principalmente para fazer Parallax no background).
@@ -16,6 +18,7 @@ class Entity(ABC):
         self.surf = pygame.image.load('asset/' + name + '.png').convert_alpha()
         self.rect = self.surf.get_rect(left=position[0], top=position[1])  # Definindo posições através de tupla
         self.speed = 0
+        self.health = ENTITY_HEALTH[self.name]
 
     @abstractmethod
     def move(self):

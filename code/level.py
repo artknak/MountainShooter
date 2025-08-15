@@ -9,9 +9,11 @@ from pygame.rect import Rect
 from pygame.surface import Surface
 
 from code.const import COLOR_WHITE, WIN_HEIGHT, MENU_OPTION, EVENT_ENEMY, SPAWN_TIME
+from code.enemy import Enemy
 from code.entity import Entity
 from code.entityFactory import EntityFactory
 from code.entityMediator import EntityMediator
+from code.player import Player
 
 
 class Level:
@@ -44,7 +46,11 @@ class Level:
             for entity in self.entity_list:
                 self.window.blit(source=entity.surf, dest=entity.rect)
                 entity.move()  # Chamando método de movimento
-            pygame.display.flip()
+
+                if isinstance(entity, (Player, Enemy)):  # A bala também é uma entidade
+                    shoot = entity.shoot()
+                    if shoot is not None:                # Se uma entidade (Player, Enemy) atirar
+                        self.entity_list.append(shoot)   # Uma bala é adicionada a lista de entidades
 
             # Evento para fechar a janela do jogo
             for event in pygame.event.get():
@@ -55,6 +61,8 @@ class Level:
                 if event.type == EVENT_ENEMY:
                     choice = random.choice(('Enemy1', 'Enemy2'))
                     self.entity_list.append(EntityFactory.get_entity(choice))
+
+            pygame.display.flip()
 
             # Level text
             self.level_text(14, f'{self.name} - Timeout: {self.timeout / 1000:.1f} s',

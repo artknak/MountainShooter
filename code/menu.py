@@ -14,7 +14,7 @@ class Menu:
 
         # Para adicionar o background do menu, precisamos carregá-la e adicioná-la a um retângulo. Esse retângulo
         # representará a imagem de fundo.
-        self.surf = pygame.image.load('./asset/MenuBg.png')  # Carregando imagem
+        self.surf = pygame.image.load('./asset/MenuBg.png').convert_alpha()  # Carregando imagem
         self.rect = self.surf.get_rect(left=0, top=0)  # Retângulo é desenhado a partir do topo superior esquerdo
 
     def run(self):
@@ -41,28 +41,25 @@ class Menu:
 
             # Registrando eventos
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:                   # Evento para encerrar janela
-                    pygame.quit()                               # Close window
-                    quit()                                      # End pygame
+                if event.type == pygame.QUIT:  # Evento para encerrar janela
+                    pygame.quit()  # Close window
+                    quit()  # End pygame
 
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_DOWN:              # Possibilita descer no menu
+                    if event.key == pygame.K_DOWN:  # Possibilita descer no menu
                         if menu_option < len(MENU_OPTION) - 1:  # Usuário é permitido descer somente até o exit
-                            menu_option += 1                    # Sem isso, poderia descer até sair da tela
+                            menu_option += 1  # Sem isso, poderia descer até sair da tela
                         else:
-                            menu_option = 0                     # Volta ao início se menu_option for > len(MENU_OPTION)
+                            menu_option = 0  # Volta ao início se menu_option for > len(MENU_OPTION)
 
-                    if event.key == pygame.K_UP:                # Possibilita subir no menu
+                    if event.key == pygame.K_UP:  # Possibilita subir no menu
                         if menu_option > 0:
                             menu_option -= 1
                         else:
-                            menu_option = len(MENU_OPTION) -1
+                            menu_option = len(MENU_OPTION) - 1
 
-                    if event.key == pygame.K_RETURN:            # Registra enter no menu
-                        return MENU_OPTION[menu_option]         # Pega opção no menu através do seu índice
-
-
-
+                    if event.key == pygame.K_RETURN:  # Registra enter no menu
+                        return MENU_OPTION[menu_option]  # Pega opção no menu através do seu índice
 
     def menu_text(self, text_size: int, text: str, text_color: tuple, text_center_pos: tuple):
         """
@@ -76,4 +73,3 @@ class Menu:
         text_rect: Rect = text_surf.get_rect(center=text_center_pos)
         # Desenhando retângulo
         self.window.blit(source=text_surf, dest=text_rect)
-

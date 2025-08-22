@@ -8,7 +8,7 @@ from pygame.font import Font
 from pygame.rect import Rect
 from pygame.surface import Surface
 
-from code.const import COLOR_WHITE, WIN_HEIGHT, MENU_OPTION, EVENT_ENEMY, SPAWN_TIME
+from code.const import C_WHITE, WIN_HEIGHT, MENU_OPTION, EVENT_ENEMY, SPAWN_TIME, C_GREEN, C_CYAN
 from code.enemy import Enemy
 from code.entity import Entity
 from code.entityFactory import EntityFactory
@@ -52,6 +52,13 @@ class Level:
                     if shoot is not None:                # Se uma entidade (Player, Enemy) atirar
                         self.entity_list.append(shoot)   # Uma bala é adicionada a lista de entidades
 
+                if entity.name == 'Player1':
+                    self.level_text(14, f'Player1 - Health: {entity.health} / Score: {entity.score}',
+                                    C_GREEN, (10, 25))
+                if entity.name == 'Player2':
+                    self.level_text(14, f'Player2 - Health: {entity.health} / Score: {entity.score}',
+                                    C_CYAN, (10, 45))
+
             # Evento para fechar a janela do jogo
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -62,15 +69,13 @@ class Level:
                     choice = random.choice(('Enemy1', 'Enemy2'))
                     self.entity_list.append(EntityFactory.get_entity(choice))
 
-            pygame.display.flip()
-
             # Level text
             self.level_text(14, f'{self.name} - Timeout: {self.timeout / 1000:.1f} s',
-                            COLOR_WHITE, (10, 5))  # Timeout text (tempo de duração da fase)
+                            C_WHITE, (10, 5))  # Timeout text (tempo de duração da fase)
             self.level_text(14, f'Fps: {clock.get_fps():.0f}',
-                            COLOR_WHITE, (10, WIN_HEIGHT - 35))  # Fps text
+                            C_WHITE, (10, WIN_HEIGHT - 35))  # Fps text
             self.level_text(14, f'Entidades: {len(self.entity_list)}',
-                            COLOR_WHITE, (10, WIN_HEIGHT - 20))  # Entity text (mostra quantos têm na fase)
+                            C_WHITE, (10, WIN_HEIGHT - 20))  # Entity text (mostra quantos têm na fase)
             pygame.display.flip()
 
             EntityMediator.verify_collision(self.entity_list)  # Verificador de colisões
@@ -78,6 +83,8 @@ class Level:
             # Verifica a vida da entidade
             # Se for 0, apaga a entidade de entity_list, ou seja, a apaga do jogo
             EntityMediator.verify_health(self.entity_list)
+
+            pygame.display.flip()
 
     def level_text(self, text_size: int, text: str, text_color: tuple, text_pos: tuple):
         text_font: Font = pygame.font.SysFont(name='Lucida Sans Typewriter', size=text_size)

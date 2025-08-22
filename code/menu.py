@@ -5,7 +5,7 @@ from pygame.surface import Surface
 from pygame.rect import Rect
 from pygame.font import Font
 
-from code.const import WIN_WIDTH, COLOR_ORANGE, MENU_OPTION, COLOR_WHITE, COLOR_YELLOW
+from code.const import WIN_WIDTH, C_ORANGE, MENU_OPTION, C_WHITE, C_YELLOW
 
 
 class Menu:
@@ -24,19 +24,19 @@ class Menu:
 
         while True:  # Loop para ficar infinitamente carregando o background
             self.window.blit(source=self.surf, dest=self.rect)  # Aplicando a imagem ao retângulo do background
-            self.menu_text(75, 'Mountain', COLOR_ORANGE, ((WIN_WIDTH / 2), 70))
-            self.menu_text(75, 'Shooter', COLOR_ORANGE, ((WIN_WIDTH / 2), 115))
+            self.menu_text(75, 'Mountain', C_ORANGE, ((WIN_WIDTH / 2), 70))
+            self.menu_text(75, 'Shooter', C_ORANGE, ((WIN_WIDTH / 2), 115))
 
             # Laço para imprimir opções do menu
             # A cada repetição, as opções são impressas com um offset de 30 px
             for opt in range(len(MENU_OPTION)):
                 if opt == menu_option:
                     # If para pintar o texto selecionado de amarelo
-                    self.menu_text(25, MENU_OPTION[opt], COLOR_YELLOW, ((WIN_WIDTH / 2),
-                                                                        170 + 25 * opt))
+                    self.menu_text(25, MENU_OPTION[opt], C_YELLOW, ((WIN_WIDTH / 2),
+                                                                    170 + 25 * opt))
                 else:
-                    self.menu_text(25, MENU_OPTION[opt], COLOR_WHITE, ((WIN_WIDTH / 2),
-                                                                       170 + 25 * opt))
+                    self.menu_text(25, MENU_OPTION[opt], C_WHITE, ((WIN_WIDTH / 2),
+                                                                   170 + 25 * opt))
             pygame.display.flip()  # Atualizando tela
 
             # Registrando eventos

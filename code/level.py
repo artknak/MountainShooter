@@ -8,7 +8,8 @@ from pygame.font import Font
 from pygame.rect import Rect
 from pygame.surface import Surface
 
-from code.const import C_WHITE, WIN_HEIGHT, MENU_OPTION, EVENT_ENEMY, SPAWN_TIME, C_GREEN, C_CYAN
+from code.const import C_WHITE, WIN_HEIGHT, MENU_OPTION, EVENT_ENEMY, SPAWN_TIME, C_GREEN, C_CYAN, EVENT_TIMEOUT, \
+    TIMEOUT_STEP, TIMEOUT_LEVEL
 from code.enemy import Enemy
 from code.entity import Entity
 from code.entityFactory import EntityFactory
@@ -17,22 +18,28 @@ from code.player import Player
 
 
 class Level:
-    def __init__(self, window, name, game_mode):
-        self.timeout = 20000  # 20 segundos
+    def __init__(self, window: Surface, name: str, game_mode: str, player_score: list[int]):
+        self.timeout = TIMEOUT_LEVEL  # 20 segundos
         self.window = window
         self.name = name
         self.game_mode = game_mode  # Modo de jogo
         self.entity_list: list[Entity] = []  # Lista de entidades (contém background, player e inimigos)
-        self.entity_list.extend(EntityFactory.get_entity('Level1Bg'))  # Adidicionando background do lvl 1
-        self.entity_list.append(EntityFactory.get_entity('Player1'))   # Adicionando player
+        self.entity_list.extend(EntityFactory.get_entity(self.name + 'Bg'))  # Adidicionando background do lvl 1
+
+        player = EntityFactory.get_entity('Player1')  # Adicionando player
+        player.score = player_score[0]
+        self.entity_list.append(player)
 
         # Só spawna player 2 se o game_mode for COOP ou COMP
         if game_mode in [MENU_OPTION[1], MENU_OPTION[2]]:
-            self.entity_list.append(EntityFactory.get_entity('Player2'))
+            player = EntityFactory.get_entity('Player2')  # Adicionando player
+            player.score = player_score[1]
+            self.entity_list.append(player)
 
-        pygame.time.set_timer(EVENT_ENEMY, SPAWN_TIME)  # Seta um timer em ms para a geração de inimigos
+        pygame.time.set_timer(EVENT_ENEMY, SPAWN_TIME)      # Seta um timer em ms para a geração de inimigos
+        pygame.time.set_timer(EVENT_TIMEOUT, TIMEOUT_STEP)  # Checa a condição de vitória a cada 100 ms
 
-    def run(self):
+    def run(self, player_score: list[int]):
         # Carregando música
         pygame.mixer_music.load(f'asset/{self.name}.mp3')
         pygame.mixer_music.play(-1)
@@ -65,9 +72,32 @@ class Level:
                     pygame.quit()
                     sys.exit()
 
+                # Checa se pode fazer spawn de um inimigo
                 if event.type == EVENT_ENEMY:
                     choice = random.choice(('Enemy1', 'Enemy2'))
                     self.entity_list.append(EntityFactory.get_entity(choice))
+
+                # Decrementa self.timeout conforme o timer e com o TIMEOUT_STEP
+                if event.type == EVENT_TIMEOUT:
+                    self.timeout -= TIMEOUT_STEP
+                    if self.timeout == 0:
+
+                        for ent in self.entity_list:  # Atualiza os scores para os players
+                            if isinstance(ent, Player) and ent.name == 'Player1':
+                                player_score[0] = ent.score
+                            if isinstance(ent, Player) and ent.name == 'Player2':
+                                player_score[1] = ent.score
+
+                        return True  # Retorna True para encerrar o level
+
+                # Se Player morrer, finaliza jogo e não permite avançar para próxima fase
+                found_player = False
+                for ent in self.entity_list:
+                    if isinstance(ent, Player):
+                        found_player = True
+
+                if not found_player:
+                    return False
 
             # Level text
             self.level_text(14, f'{self.name} - Timeout: {self.timeout / 1000:.1f} s',
